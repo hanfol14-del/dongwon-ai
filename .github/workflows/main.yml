@@ -17,7 +17,7 @@ jobs:
       - name: Extract project ZIP
         run: |
           unzip -o GPT_Floating_Assistant_fixed.zip
-          ls -la GPT_Floating_Assistant
+          ls -la
 
       - name: Set up Java 17
         uses: actions/setup-java@v5
@@ -36,11 +36,10 @@ jobs:
           gradle-version: '8.13'
 
       - name: Build APK
-        working-directory: GPT_Floating_Assistant
         run: gradle assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Dongwon-debug-apk
-          path: GPT_Floating_Assistant/app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
