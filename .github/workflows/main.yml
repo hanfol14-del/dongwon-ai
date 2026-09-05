@@ -14,9 +14,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Extract project ZIP
+      - name: Restore stable signing key
+        env:
+          DONGWON_KEYSTORE_B64: ${{ secrets.DONGWON_KEYSTORE_B64 }}
+          DONGWON_STORE_PASSWORD: ${{ secrets.DONGWON_STORE_PASSWORD }}
+          DONGWON_KEY_ALIAS: ${{ secrets.DONGWON_KEY_ALIAS }}
+          DONGWON_KEY_PASSWORD: ${{ secrets.DONGWON_KEY_PASSWORD }}
         run: |
-          unzip -o GPT_Floating_Assistant_fixed.zip
+          test -n "$DONGWON_KEYSTORE_B64" || (echo "Missing DONGWON_KEYSTORE_B64" && exit 1)
+          test -n "$DONGWON_STORE_PASSWORD" || (echo "Missing DONGWON_STORE_PASSWORD" && exit 1)
+          test -n "$DONGWON_KEY_ALIAS" || (echo "Missing DONGWON_KEY_ALIAS" && exit 1)
+          test -n "$DONGWON_KEY_PASSWORD" || (echo "Missing DONGWON_KEY_PASSWORD" && exit 1)
+
+          echo "$DONGWON_KEYSTORE_B64" | base64 --decode > dongwon-release.jks
+
+          echo "DONGWON_KEYSTORE_PATH=$PWD/dongwon-release.jks" >> "$GITHUB_ENV"
+          echo "DONGWON_STORE_PASSWORD=$DONGWON_STORE_PASSWORD" >> "$GITHUB_ENV"
+          echo "DONGWON_KEY_ALIAS=$DONGWON_KEY_ALIAS" >> "$GITHUB_ENV"
+          echo "DONGWON_KEY_PASSWORD=$DONGWON_KEY_PASSWORD" >> "$GITHUB_ENV"
+
+      - name: Extract Dongwon project
+        run: |
+          unzip -o GPT_Floating_Assistant_v2.0_stable_signing.zip
           ls -la
 
       - name: Set up Java 17
